@@ -1,0 +1,20 @@
+version: '3'
+services:
+  sandbox:
+    # platform: linux/amd64
+    image: mcr.microsoft.com/devcontainers/base:dev-ubuntu
+    init: true
+    # cap_add:
+    #   - SYS_PTRACE
+    # security_opt:
+    #   - seccomp:unconfined
+    entrypoint:
+      - sleep
+      - infinity
+    volumes:
+      # - type: bind
+      #   source: /var/run/docker.sock
+      #   target: /var/run/docker.sock
+      - type: bind
+        source: ../
+        target: /workspace

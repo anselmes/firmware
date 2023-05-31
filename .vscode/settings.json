@@ -1,0 +1,4 @@
+{
+  "vscode-kubernetes.helm-path": "/usr/local/bin/helm",
+  "ansible.python.interpreterPath": "/opt/homebrew/bin/python3.11"
+}
