@@ -1,5 +1,18 @@
 # Firmware
 
+Build firmware will be moved here:
+
+- u-boot-dtb.bin (with dtb)
+- u-boot.bin (without dtb)
+
+## Building
+
+Example:
+
+```bash
+cmd/run.sh uboot build coreboot
+```
+
 ---
 
 Copyright (c) 2023 Schubert Anselme <schubert@anselm.es>

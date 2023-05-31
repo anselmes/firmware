@@ -1,5 +1,13 @@
 # Readme
 
+## Documentation
+
+[Device Tree Binary](./build/dtb/README.md)
+
+[Firmware](./build/firmware/README.md)
+
+[Kernel](./build/kernel/README.md)
+
 ---
 
 Copyright (c) 2023 Schubert Anselme <schubert@anselm.es>
