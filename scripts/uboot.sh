@@ -42,7 +42,7 @@ Options:
 
 build()
 {
-  TARGET="${1}"
+  export TARGET="${1}"
   echo """
 COMPILER_PREFIX:  ${COMPILER_PREFIX}
 TARGET:           ${TARGET}
@@ -76,7 +76,7 @@ copy_artifact()
 
   echo """
 DTB:           ${DTB}
-U-Boot         ${UBOOT}
+U-Boot:        ${UBOOT}
 U-Boot (dtb):  ${UBOOT_DTB}
 U-Boot (elf):  ${UBOOT_ELF}
   """
@@ -84,15 +84,17 @@ U-Boot (elf):  ${UBOOT_ELF}
   if [[ -f "${DTB}" && -f "${UBOOT}" && -f "${UBOOT_DTB}" && -f "${UBOOT_ELF}" && "${OVERWRITE}" == true ]]
   then
     echo "copying artifacts (overwriting if exists)..."
-    cp -f "${DTB}" "${DTB_PATH}/"
-    cp -f "${UBOOT}" "${UBOOT_DTB}" "${FIRMWARE_PATH}/"
-    cp -f "${UBOOT_ELF}" "${KERNEL_PATH}/"
+    cp -f "${DTB}" "${DTB_PATH}/u-boot-${TARGET}.dtb"
+    cp -f "${UBOOT}" "${FIRMWARE_PATH}/u-boot-${TARGET}.bin"
+    cp -f "${UBOOT_DTB}" "${FIRMWARE_PATH}/u-boot-dtb-${TARGET}.bin"
+    cp -f "${UBOOT_ELF}" "${KERNEL_PATH}/u-boot-${TARGET}"
   elif [[ -f "${DTB}" && -f "${UBOOT}" && -f "${UBOOT_DTB}" && -f "${UBOOT_ELF}" ]]
   then
     echo "copying artifacts..."
-    cp "${DTB}" "${DTB_PATH}/" || true
-    cp "${UBOOT}" "${UBOOT_DTB}" "${FIRMWARE_PATH}/" || true
-    cp "${UBOOT_ELF}" "${KERNEL_PATH}/" || true
+    cp "${DTB}" "${DTB_PATH}/u-boot-${TARGET}.dtb"
+    cp "${UBOOT}" "${FIRMWARE_PATH}/u-boot-${TARGET}.bin"
+    cp "${UBOOT_DTB}" "${FIRMWARE_PATH}/u-boot-dtb-${TARGET}.bin"
+    cp "${UBOOT_ELF}" "${KERNEL_PATH}/u-boot-${TARGET}"
   else
     echo "no artifacts built!"
     exit 1
