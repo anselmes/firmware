@@ -18,115 +18,82 @@
 set -e
 
 : "${REPO:="https://github.com/anselmes/u-boot.git"}"
-: "${U_BOOT_PATH:="/workspace/modules/u-boot"}"
-: "${COMPILER_PREFIX:="x86_64-linux-gnu-"}"
-: "${OVERWRITE:=false}"
 
 # help
 print_help()
 {
   echo """
-Usage: uboot [OPTIONS] [CMD] [ARGS]
+Usage: uboot [CMD] [TARGET]
 
 Commands:
-  pull            Pull u-boot repo
-  build <target>  Build uboot
-  copy            Copy artifacts (build/dtb/ build/firmware/ build/kernel/)
-
-Options:
-  -p, --prefix  Cross compiller prefix (default: x86_64-linux-gnu-)
-  --overwrite   Overwrite operation (default: false)
+  pull              Pull uboot repo.
+  build <target>    Build uboot (coreboot, opensbi, onie).
+  copy              Copy uboot to output directory.
 """
   exit 0
 }
 
+# build
 build()
 {
   export TARGET="${1}"
   echo """
-COMPILER_PREFIX:  ${COMPILER_PREFIX}
 TARGET:           ${TARGET}
 """
+
+  mkdir -p "${FIRMWARE_PATH}"
+  [[ ${OVERWRITE} == true ]] && CROSS_COMPILE="${CROSS_COMPILE}" make distclean
 
   if [[ -z ${TARGET} ]]
   then
     echo "missing target!"
     exit 1
   else
-    NBPROC="$(nproc)"
-    echo "building uboot for ${TARGET} using ${COMPILER_PREFIX}gcc..."
-    cd "${U_BOOT_PATH}" \
-      && CROSS_COMPILE=${COMPILER_PREFIX} make -j "${TARGET}"_defconfig \
-      && CROSS_COMPILE=${COMPILER_PREFIX} make -j "${NBPROC}" \
-      && copy_artifact
+    echo "building uboot for ${TARGET} using ${CROSS_COMPILE}gcc..."
+    case "${TARGET}" in
+      coreboot)
+        cd "${UBOOT_PATH}" \
+          && CROSS_COMPILE="${CROSS_COMPILE}" make -j "${NBPROC}"
+        ;;
+      opensbi)
+        cd "${UBOOT_PATH}" \
+          && CROSS_COMPILE="${CROSS_COMPILE}" OPENSBI="${OPENSBI}" make -j "${NBPROC}"
+        ;;
+      onie)
+        echo "TODO: building uboot for onie..."
+        ;;
+      *)
+        echo "unknown target!"
+        exit 1
+        ;;
+    esac
     exit 0
   fi
 }
 
-copy_artifact()
-{
-  DTB="${U_BOOT_PATH}/u-boot.dtb"
-  UBOOT="${U_BOOT_PATH}/u-boot.bin"
-  UBOOT_DTB="${U_BOOT_PATH}/u-boot-dtb.bin"
-  UBOOT_ELF="${U_BOOT_PATH}/u-boot"
-
-  DTB_PATH="/workspace/build/dtb"
-  FIRMWARE_PATH="/workspace/build/firmware"
-  KERNEL_PATH="/workspace/build/kernel"
-
-  echo """
-DTB:           ${DTB}
-U-Boot:        ${UBOOT}
-U-Boot (dtb):  ${UBOOT_DTB}
-U-Boot (elf):  ${UBOOT_ELF}
-  """
-
-  if [[ -f "${DTB}" && -f "${UBOOT}" && -f "${UBOOT_DTB}" && -f "${UBOOT_ELF}" && "${OVERWRITE}" == true ]]
-  then
-    echo "copying artifacts (overwriting if exists)..."
-    cp -f "${DTB}" "${DTB_PATH}/u-boot-${TARGET}.dtb"
-    cp -f "${UBOOT}" "${FIRMWARE_PATH}/u-boot-${TARGET}.bin"
-    cp -f "${UBOOT_DTB}" "${FIRMWARE_PATH}/u-boot-dtb-${TARGET}.bin"
-    cp -f "${UBOOT_ELF}" "${KERNEL_PATH}/u-boot-${TARGET}"
-  elif [[ -f "${DTB}" && -f "${UBOOT}" && -f "${UBOOT_DTB}" && -f "${UBOOT_ELF}" ]]
-  then
-    echo "copying artifacts..."
-    cp "${DTB}" "${DTB_PATH}/u-boot-${TARGET}.dtb"
-    cp "${UBOOT}" "${FIRMWARE_PATH}/u-boot-${TARGET}.bin"
-    cp "${UBOOT_DTB}" "${FIRMWARE_PATH}/u-boot-dtb-${TARGET}.bin"
-    cp "${UBOOT_ELF}" "${KERNEL_PATH}/u-boot-${TARGET}"
-  else
-    echo "no artifacts built!"
-    exit 1
-  fi
-}
-
+# parse args
 while [[ $# -gt 0 ]]
 do
   case "$2" in
-    -p|--prefix)
-      [[ $# -gt 0 ]] && export COMPILER_PREFIX="${1}"
-      shift
-      ;;
-    --overwrite)
-      export OVERWRITE=true
-      shift
-      ;;
     pull)
       echo "pulling uboot..."
-      ! [[ -d "${U_BOOT_PATH}" ]] && git clone "${REPO}" "${U_BOOT_PATH}"
+      ! [[ -d "${UBOOT_PATH}" ]] && git clone "${REPO}" "${UBOOT_PATH}"
       break
       ;;
     build)
-      [[ $# -gt 2 ]] && TARGET="${3}"
+      if [[ $# -lt 3 ]]
+      then
+        echo "missing target!"
+        exit 1
+      fi
+      export FIRMWARE_PATH="${UBOOT_PATH}/build/firmware/${TARGET}"
       [[ $# -gt 0 ]] && build "${TARGET}"
       ;;
     copy)
-      copy_artifact
+      "${COPY_CMD}" uboot
       break
       ;;
     *)
-
       break
       ;;
   esac

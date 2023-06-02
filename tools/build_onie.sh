@@ -17,11 +17,26 @@
 
 set -e
 
-# FIXME: pull coreboot
-./cmd/run.sh coreboot pull || true
+export WORKSPACE="/workspace"
+export TARGET="onie"
+export CROSS_COMPILE="riscv64-linux-gnu-"
 
-# FIXME: pull uboot
-./cmd/run.sh uboot pull || true
+export UBOOT_PATH="${WORKSPACE}/modules/u-boot"
+export ONIE_PATH="${WORKSPACE}/modules/onie"
 
-# TODO: build uboot as coreboot payload
-./cmd/run.sh uboot build coreboot
+export CONFIG_PATH="${WORKSPACE}/config/${TARGET}"
+export FIRMWARE_PATH="${WORKSPACE}/build/firmware/${TARGET}"
+
+: "${BOARD:="qemu"}"
+
+: "${UBOOT_CONFIG:="${CONFIG_PATH}/${BOARD}.conf"}"
+: "${ONIE:="${FIRMWARE_PATH}/fw_dynamic.bin"}"
+
+# pull onie
+./cmd/run.sh onie pull
+
+# pull uboot
+./cmd/run.sh uboot pull
+
+# TODO: build uboot
+# TODO: build onie

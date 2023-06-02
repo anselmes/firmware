@@ -26,17 +26,43 @@ print_help()
 Usage: opensbi [CMD]
 
 Commands:
-  pull    Pull opensbi repo
+  pull    Pull opensbi repo.
+  build   Build opensbi.
+  copy    Copy opensbi to output directory.
 """
   exit 0
 }
 
+# build
+build()
+{
+  [[ ${OVERWRITE} == true ]] && CROSS_COMPILE="${CROSS_COMPILE}" make distclean
+
+  echo "building opensbi..."
+  cd "${OPENSBI_PATH}" \
+        && make \
+        CROSS_COMPILE="${CROSS_COMPILE}" \
+        PLATFORM=generic \
+        FW_TEXT_START=0x40000000 \
+        FW_OPTIONS=0 \
+        -j "${NBPROC}"
+}
+
+# parse args
 while [[ $# -gt 0 ]]
 do
   case "$2" in
     pull)
       echo "pulling opensbi..."
       ! [[ -d ./modules/opensbi ]] && git clone "${REPO}" ./modules/opensbi
+      break
+      ;;
+    build)
+      build
+      break
+      ;;
+    copy)
+      "${COPY_CMD}" opensbi
       break
       ;;
     *)

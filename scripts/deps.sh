@@ -17,25 +17,62 @@
 
 set -e
 
+: "${GCC_VERSION:=11}"
+
 apt-get update -qq
+apt-get autoremove -y
 apt-get install -y \
   autoconf \
   automake \
   autotools-dev \
+  bc \
+  binutils-arm-linux-gnueabihf \
+  binutils-i686-linux-gnu \
+  binutils-riscv64-linux-gnu \
+  binutils-x86-64-linux-gnu \
+  bison \
+  build-essential \
   curl \
-  python3 \
+  flex \
+  gawk \
+  gcc-arm-linux-gnueabihf \
+  gcc-i686-linux-gnu \
+  gcc-riscv64-linux-gnu \
+  gcc-x86-64-linux-gnu \
+  "gcc-${GCC_VERSION}-arm-linux-gnueabihf" \
+  "gcc-${GCC_VERSION}-i686-linux-gnu" \
+  "gcc-${GCC_VERSION}-riscv64-linux-gnu" \
+  "gcc-${GCC_VERSION}-x86-64-linux-gnu" \
+  "gnat-${GCC_VERSION}" \
+  "gnat-${GCC_VERSION}-arm-linux-gnueabihf" \
+  "gnat-${GCC_VERSION}-i686-linux-gnu" \
+  "gnat-${GCC_VERSION}-riscv64-linux-gnu" \
+  "gnat-${GCC_VERSION}-x86-64-linux-gnu" \
+  "gnat-${GCC_VERSION}-x86-64-linux-gnux32" \
+  gperf \
+  lib32"gcc-${GCC_VERSION}-dev-amd64-cross" \
+  lib64"gcc-${GCC_VERSION}-dev-i386-cross" \
+  libexpat-dev \
+  lib"gcc-${GCC_VERSION}-dev-amd64-cross" \
+  lib"gcc-${GCC_VERSION}-dev-i386-cross" \
+  libgmp-dev \
+  lib"gnat-${GCC_VERSION}" \
+  lib"gnat-${GCC_VERSION}-amd64-cross" \
+  lib"gnat-${GCC_VERSION}-armhf-cross" \
+  lib"gnat-${GCC_VERSION}-i386-cross" \
+  lib"gnat-${GCC_VERSION}-riscv64-cross" \
   libmpc-dev \
   libmpfr-dev \
-  libgmp-dev \
-  gawk \
-  build-essential \
-  bison \
-  flex \
-  texinfo \
-  gperf \
+  libncurses5-dev \
   libtool \
+  libx32"gcc-${GCC_VERSION}-dev-amd64-cross" \
+  libx32"gcc-${GCC_VERSION}-dev-i386-cross" \
+  ncurses-dev \
+  ninja-build \
   patchutils \
-  bc \
-  zlib1g-dev \
-  libexpat-dev \
-  ninja-build
+  python3 \
+  sbsigntool \
+  swig \
+  texinfo \
+  wget \
+  zlib1g-dev

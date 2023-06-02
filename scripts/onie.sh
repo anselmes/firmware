@@ -26,17 +26,36 @@ print_help()
 Usage: onie [CMD]
 
 Commands:
-  pull    Pull onie repo
+  pull    Pull onie repo.
+  build   Build onie.
+  copy    Copy onie to output directory.
 """
   exit 0
 }
 
+# build
+build()
+{
+  [[ ${OVERWRITE} == true ]] && CROSS_COMPILE="${CROSS_COMPILE}" make distclean
+
+  echo "TODO: building onie..."
+}
+
+# parse args
 while [[ $# -gt 0 ]]
 do
   case "$2" in
     pull)
       echo "pulling onie..."
       ! [[ -d ./modules/onie ]] && git clone "${REPO}" ./modules/onie
+      break
+      ;;
+    build)
+      build
+      break
+      ;;
+    copy)
+      "${COPY_CMD}" onie
       break
       ;;
     *)

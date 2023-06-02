@@ -1,0 +1,69 @@
+# Add 'repo' label to any root file changes
+repo:
+  - "*"
+
+# Add 'github-actions' label to any changes in the '.github' directory
+github-actions:
+  - .github/workflows/*
+  - .github/workflows/*/**
+  - .github/dependabot.yml
+  - .github/dependabot.yml/**
+
+# Add 'devcontainer' label to any changes in the '.devcontainer' directory
+# and to the '.docker' directory
+devcontainer:
+  - .devcontainer/*
+  - .devcontainer/*/**
+  - .devcontainer/devcontainer.json
+  - .devcontainer/devcontainer.json/**
+  - .docker/*
+  - .docker/*/**
+
+# Add 'build' label to any changes in the 'build' directory
+build:
+  - build/*
+  - build/*/**
+
+# Add 'cli' label to any changes in the 'cmd' directory
+cli:
+  - cmd/*
+  - cmd/*/**
+
+# Add 'configuration' label to any changes in the 'config' directory
+# and to any '.conf' file
+configuration:
+  - config/*
+  - config/*/**
+  - '*.conf'
+
+# Add 'modules' label to any changes in the 'modules' directory
+modules:
+  - modules/*
+  - modules/*/**
+
+# Add 'scripts' label to any changes in the 'scripts' directory
+# and to any '.sh' file
+scripts:
+  - scripts/*
+  - scripts/*/**
+  - '*.sh'
+
+# Add 'tools' label to any changes in the 'tools' directory
+tools:
+  - tools/*
+  - tools/*/**
+
+# Add 'firmware' label to any changes in the 'firmware' directory
+firmware:
+  - build/firmware/*
+  - build/firmware/*/**
+
+# Add 'kernel' label to any changes in the 'kernel' directory
+kernel:
+  - build/kernel/*
+  - build/kernel/*/**
+
+# Add 'images' label to any changes in the 'img' directory
+images:
+  - build/img/*
+  - build/img/*/**
