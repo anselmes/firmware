@@ -1,15 +1,5 @@
 # Kernel
 
-U-Boot elf will be moved here
-
-## Building
-
-Example:
-
-```bash
-cmd/run.sh uboot build coreboot
-```
-
 ---
 
 Copyright (c) 2023 Schubert Anselme <schubert@anselm.es>

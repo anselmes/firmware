@@ -1,6 +1,6 @@
 version: '3'
 services:
-  sandbox:
+  firmware:
     # platform: linux/amd64
     image: mcr.microsoft.com/devcontainers/base:dev-ubuntu
     init: true
@@ -16,5 +16,7 @@ services:
       #   source: /var/run/docker.sock
       #   target: /var/run/docker.sock
       - type: bind
-        source: ../
+        source: ..
         target: /workspace
+    env_file:
+      - ../.env

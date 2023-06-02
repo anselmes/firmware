@@ -1,9 +1,15 @@
 # Firmware
 
-Build firmware will be moved here:
+U-Boot firmware will be copied here
 
-- u-boot-dtb.bin (with dtb)
-- u-boot.bin (without dtb)
+Example:
+
+```text
+coreboot/u-boot.rom
+coreboot/u-boot.bin
+coreboot/u-boot.dtb
+coreboot/u-boot.elf
+```
 
 ## Building
 
