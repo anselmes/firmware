@@ -17,6 +17,18 @@
 
 set -e
 
+export OVERWRITE=false
+export WORKSPACE="/workspace"
+
+export COPY_CMD="${WORKSPACE}/scripts/copy.sh"
+
+export UBOOT_PATH="${WORKSPACE}/modules/u-boot"
+export COREBOOT_PATH="${WORKSPACE}/modules/coreboot"
+export OPENSBI_PATH="${WORKSPACE}/modules/opensbi"
+
+NBPROC="$(nproc)"
+export NBPROC
+
 # notice
 print_notice()
 {
@@ -32,17 +44,25 @@ under certain conditions.
 print_help()
 {
   echo """
-Usage: run [OPTIONS] CMD [ARGS]
-
-Commands:
-  deps                    Dependency commands (requires root permission)
-  coreboot                Coreboot commands
-  opensbi                 OpenSBI commands
-  uboot                   U-Boot commands
+Usage: ./cmd/run.sh [OPTIONS] COMMAND [ARGS]...
 
 Options:
-  -h, --help, help        Print this help
-  -v, --version, version  Print verion information
+  -h, --help            Show this message and exit.
+  -v, --version         Show version and exit.
+  -r, --repo            Set repository.
+  -p, --prefix          Set compiler prefix.
+  --overwrite           Overwrite existing files.
+
+Commands:
+  deps                  Install dependencies.
+  coreboot              Build coreboot.
+  opensbi               Build opensbi.
+  uboot                 Build uboot.
+  onie                  Build onie.
+  clean <target>        Clean target.
+
+Examples:
+  ./cmd/run.sh deps
   """
   exit 0
 }
@@ -54,6 +74,36 @@ print_version()
   exit 0
 }
 
+# clean
+clean()
+{
+  TARGET="${1}"
+  [[ -n "${TARGET}" ]] && echo """
+TARGET: ${TARGET}
+
+cleaning ${TARGET}...
+  """
+
+  case "${TARGET}" in
+    coreboot)
+      cd "${COREBOOT_PATH}" \
+        && CROSS_COMPILE="${CROSS_COMPILE}" make distclean -j "${NBPROC}"
+      ;;
+    opensbi)
+      cd "${OPENSBI_PATH}" \
+        && CROSS_COMPILE="${CROSS_COMPILE}" make distclean -j "${NBPROC}"
+      ;;
+    uboot)
+      cd "${UBOOT_PATH}" \
+        && CROSS_COMPILE="${CROSS_COMPILE}" make distclean -j "${NBPROC}"
+      ;;
+    *)
+      echo "invalid target"
+      ;;
+  esac
+}
+
+# parse arguments
 while [[ $# -gt 0 ]]
 do
   case "$1" in
@@ -67,6 +117,14 @@ do
     -r|--repo)
       [[ $# -gt 0 ]] && export REPO="${1}"
       ;;
+    -p|--prefix)
+      [[ $# -gt 0 ]] && export CROSS_COMPILE="${1}"
+      shift
+      ;;
+    --overwrite)
+      export OVERWRITE=true
+      shift
+      ;;
     *)
       [[ -n ${1} ]] && CMD="${1}"
       break
@@ -75,9 +133,14 @@ do
 done
 
 # run
-[[ -z ${1} ]] && print_help
+[[ -z ${1} ]] && print_notice
 
-# FIXME: move pulling repo to deps
+echo """
+CROSS_COMPILE:  ${CROSS_COMPILE}
+OVERWRITE:        ${OVERWRITE}
+"""
+
+# run command
 case "${CMD}" in
   deps)
     ./scripts/deps.sh "$@"
@@ -91,7 +154,13 @@ case "${CMD}" in
   uboot)
     ./scripts/uboot.sh "$@"
     ;;
+  onie)
+    ./scripts/onie.sh "$@"
+    ;;
+  clean)
+    clean "${2}"
+    ;;
   *)
-    echo "invalid command"
+    print_help
     ;;
 esac
